@@ -1,0 +1,19 @@
+[profile.default]
+src = "examples"
+out = "out"
+libs = ["lib"]
+
+# Lint
+deny_warnings = true
+
+# Solc options
+solc = '0.8.24'
+evm_version = "shanghai"
+optimizer = true
+optimizer_runs = 200000
+
+# EVM options
+gas_limit = 30000000
+gas_price = 1
+block_base_fee_per_gas = 0
+block_gas_limit = 30000000
