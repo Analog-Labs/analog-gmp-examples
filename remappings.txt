@@ -1,0 +1,3 @@
+@analog-gmp/=lib/contracts/src/
+@analog-gmp-testing/=lib/contracts/test/
+forge-std/=lib/forge-std/src/
