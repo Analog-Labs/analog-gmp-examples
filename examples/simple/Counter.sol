@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {IGmpRecipient} from "@analog-gmp/interfaces/IGmpRecipient.sol";
+import {IGmpReceiver} from "@analog-gmp/interfaces/IGmpReceiver.sol";
 
-contract Counter is IGmpRecipient {
+contract Counter is IGmpReceiver {
     address private immutable _gateway;
     uint256 public number;
 
