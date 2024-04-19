@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Analog's Contracts (last updated v0.1.0) (test/GmpTestTools.t.sol)
 
 pragma solidity >=0.8.0;
 
