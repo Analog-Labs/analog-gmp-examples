@@ -3,10 +3,14 @@ pragma solidity ^0.8.0;
 
 import {Test, console} from "forge-std/Test.sol";
 import {IGateway} from "@analog-gmp/interfaces/IGateway.sol";
+import {GmpSender, PrimitiveUtils} from "@analog-gmp/Primitives.sol";
 import {GmpTestTools} from "@analog-gmp-testing/GmpTestTools.sol";
 import {Counter} from "./Counter.sol";
 
 contract CounterTest is Test {
+    using PrimitiveUtils for address;
+    using PrimitiveUtils for GmpSender;
+
     Counter public counter;
 
     /**
@@ -53,9 +57,12 @@ contract CounterTest is Test {
         GmpTestTools.switchNetwork(sepoliaId);
         assertEq(counter.number(), 0);
 
+        // Convert Alice address to GmpSender, passing `false` indicates
+        // that the sender is an EOA, not a contract
+        GmpSender sender = alice.toSender(false);
+
         // Deposit funds to pay for the execution cost from Shibuya to Sepolia
-        bytes32 source = bytes32(uint256(uint160(alice)));
-        sepoliaGateway.deposit{value: 1 ether}(source, shibuyaId);
+        sepoliaGateway.deposit{value: 1 ether}(sender, shibuyaId);
         assertEq(counter.number(), 0);
 
         // Submit a new GMP from Shibuya to Sepolia
