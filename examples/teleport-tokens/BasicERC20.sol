@@ -15,15 +15,18 @@ contract BasicERC20 is ERC20, IGmpReceiver {
     uint16 private immutable _recipientNetwork;
 
     /**
-     * @dev Emitted when tokens are teleported from this contract.
+     * @dev Emitted when `amount` tokens are teleported from one account (`from`) in this chain to
+     * another (`to`) in another chain.
+     *
+     * Note Is not necessary to emit the destination network, because this is already emitted by the gateway in `GmpCreated` event.
      */
     event OutboundTransfer(bytes32 indexed id, address indexed from, address indexed to, uint256 amount);
 
     /**
-     * @dev Emitted when tokens are teleported to this contract.
-     * Obs: Is not necessary to emit the destination network, because this is already emitted by the gateway in `GmpCreated` event.
-     * @param id GMP message identifier
-     * @param from GMP message identifier
+     * @dev @dev Emitted when `amount` tokens are teleported from one account (`from`) in another chain to
+     * an account (`to`) in this chain.
+     *
+     * Note Is not necessary to emit the source network, because this is already emitted by the gateway in `GmpExecuted` event.
      */
     event InboundTransfer(bytes32 indexed id, address indexed from, address indexed to, uint256 amount);
 
