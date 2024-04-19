@@ -7,9 +7,12 @@
 This project uses **Forge** Ethereum testing framework (like Truffle, Hardhat and DappTools).
 Install instructions: https://book.getfoundry.sh/
 
-## Usage
+## Examples
 
-## Creating a New Project
+- [Simple Counter](./examples/teleport-tokens/README.md): Increment a counter in a contract deployed at `Chain A` by sending a message from `Chain B`. 
+- [Teleport Tokens](./examples/teleport-tokens/README.md): Teleport ERC20 tokens from `Chain A` to `Chain B`. 
+
+## Starting a New Project
 To start a new project with Foundry, use forge init
 ```sh
 forge init hello_gmp
