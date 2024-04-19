@@ -1,6 +1,6 @@
-# Simple Counter
+# Teleport Tokens
 
-This example demonstrates how to relay a message from a source-chain to a destination-chain.
+This example demonstrates how teleport an ERC20 from Alice's account in Shibuya to Bob's account in Sepolia.
 
 ### Prerequisite
 
