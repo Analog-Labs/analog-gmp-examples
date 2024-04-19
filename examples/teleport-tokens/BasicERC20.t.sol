@@ -4,7 +4,7 @@
 pragma solidity >=0.8.0;
 
 import {Test} from "forge-std/Test.sol";
-import {ExampleERC20} from "./ExampleERC20.sol";
+import {BasicERC20} from "./BasicERC20.sol";
 import {GmpTestTools} from "@analog-gmp-testing/GmpTestTools.sol";
 import {Gateway} from "@analog-gmp/Gateway.sol";
 import {IGateway} from "@analog-gmp/interfaces/IGateway.sol";
@@ -42,18 +42,18 @@ contract GmpTestToolsTest is Test {
         ///////////////////////////////////////////////////////
 
         // Pre-compute the contract addresses, because the contracts must know each other addresses.
-        ExampleERC20 shibuyaErc20 = ExampleERC20(vm.computeCreateAddress(ALICE, vm.getNonce(ALICE)));
-        ExampleERC20 sepoliaErc20 = ExampleERC20(vm.computeCreateAddress(BOB, vm.getNonce(BOB)));
+        BasicERC20 shibuyaErc20 = BasicERC20(vm.computeCreateAddress(ALICE, vm.getNonce(ALICE)));
+        BasicERC20 sepoliaErc20 = BasicERC20(vm.computeCreateAddress(BOB, vm.getNonce(BOB)));
 
         // Switch to Shibuya network and deploy the ERC20 using Alice account
         GmpTestTools.switchNetwork(SHIBUYA_NETWORK, ALICE);
-        shibuyaErc20 = new ExampleERC20("Shibuya ", "A", SHIBUYA_GATEWAY, sepoliaErc20, SEPOLIA_NETWORK, ALICE, 1000);
+        shibuyaErc20 = new BasicERC20("Shibuya ", "A", SHIBUYA_GATEWAY, sepoliaErc20, SEPOLIA_NETWORK, ALICE, 1000);
         assertEq(shibuyaErc20.balanceOf(ALICE), 1000, "unexpected alice balance in shibuya");
         assertEq(shibuyaErc20.balanceOf(BOB), 0, "unexpected bob balance in shibuya");
 
         // Switch to Sepolia network and deploy the ERC20 using Bob account
         GmpTestTools.switchNetwork(SEPOLIA_NETWORK, BOB);
-        sepoliaErc20 = new ExampleERC20("Sepolia", "B", SEPOLIA_GATEWAY, shibuyaErc20, SHIBUYA_NETWORK, BOB, 0);
+        sepoliaErc20 = new BasicERC20("Sepolia", "B", SEPOLIA_GATEWAY, shibuyaErc20, SHIBUYA_NETWORK, BOB, 0);
         assertEq(sepoliaErc20.balanceOf(ALICE), 0, "unexpected alice balance in sepolia");
         assertEq(sepoliaErc20.balanceOf(BOB), 0, "unexpected bob balance in sepolia");
 
@@ -82,7 +82,7 @@ contract GmpTestToolsTest is Test {
         // Teleport 100 tokens from Alice to to Bob's account in sepolia
         // Obs: The `teleport` method internally calls `gateway.submitMessage(...)`
         vm.expectEmit(false, true, false, true, address(shibuyaErc20));
-        emit ExampleERC20.OutboundTransfer(bytes32(0), ALICE, BOB, 100);
+        emit BasicERC20.OutboundTransfer(bytes32(0), ALICE, BOB, 100);
         bytes32 messageID = shibuyaErc20.teleport(BOB, 100);
 
         // Now with the `messageID`, Alice can check the message status in the destination gateway contract
@@ -105,7 +105,7 @@ contract GmpTestToolsTest is Test {
         // Note: In a live network, the GMP message will be relayed by Chronicle Nodes after a minimum number of confirmations.
         // here we can simulate this behavior by calling `GmpTestTools.relayMessages()`, this will relay all pending messages.
         vm.expectEmit(true, true, false, true, address(sepoliaErc20));
-        emit ExampleERC20.InboundTransfer(messageID, ALICE, BOB, 100);
+        emit BasicERC20.InboundTransfer(messageID, ALICE, BOB, 100);
         GmpTestTools.relayMessages();
 
         // Success! The GMP message was executed!!!

@@ -7,11 +7,11 @@ import {IGmpReceiver} from "@analog-gmp/interfaces/IGmpReceiver.sol";
 import {IGateway} from "@analog-gmp/interfaces/IGateway.sol";
 import {GmpSender, PrimitiveUtils} from "@analog-gmp/Primitives.sol";
 
-contract ExampleERC20 is ERC20, IGmpReceiver {
+contract BasicERC20 is ERC20, IGmpReceiver {
     using PrimitiveUtils for GmpSender;
 
-    IGateway private immutable _gateway;
-    ExampleERC20 private immutable _recipientErc20;
+    IGateway private immutable _trustedGateway;
+    BasicERC20 private immutable _recipientErc20;
     uint16 private immutable _recipientNetwork;
 
     event OutboundTransfer(bytes32 indexed id, address indexed from, address indexed to, uint256 amount);
@@ -33,12 +33,12 @@ contract ExampleERC20 is ERC20, IGmpReceiver {
         string memory name,
         string memory symbol,
         IGateway gatewayAddress,
-        ExampleERC20 recipient,
+        BasicERC20 recipient,
         uint16 recipientNetwork,
         address holder,
         uint256 initialSupply
     ) ERC20(name, symbol, 10) {
-        _gateway = gatewayAddress;
+        _trustedGateway = gatewayAddress;
         _recipientErc20 = recipient;
         _recipientNetwork = recipientNetwork;
         if (initialSupply > 0) {
@@ -52,7 +52,7 @@ contract ExampleERC20 is ERC20, IGmpReceiver {
     function teleport(address recipient, uint256 amount) external returns (bytes32 messageID) {
         _burn(msg.sender, amount);
         bytes memory message = abi.encode(TeleportCommand({from: msg.sender, to: recipient, amount: amount}));
-        messageID = _gateway.submitMessage(address(_recipientErc20), _recipientNetwork, MSG_GAS_LIMIT, message);
+        messageID = _trustedGateway.submitMessage(address(_recipientErc20), _recipientNetwork, MSG_GAS_LIMIT, message);
         emit OutboundTransfer(messageID, msg.sender, recipient, amount);
     }
 
@@ -63,7 +63,9 @@ contract ExampleERC20 is ERC20, IGmpReceiver {
     {
         // Convert bytes32 to address
         address senderAddr = GmpSender.wrap(sender).toAddress();
-        require(msg.sender == address(_gateway), "Unauthorized: only the gateway can call this method");
+
+        // Validate the message
+        require(msg.sender == address(_trustedGateway), "Unauthorized: only the gateway can call this method");
         require(network == _recipientNetwork, "Unauthorized network");
         require(senderAddr == address(_recipientErc20), "Unauthorized sender");
 
