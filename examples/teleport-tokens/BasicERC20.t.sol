@@ -69,10 +69,10 @@ contract GmpTestToolsTest is Test {
 
         // Teleport 100 tokens from Alice to Bob's account in Sepolia
         // Obs: The `teleport` method now calls `gateway.submitMessage(...)` with value
-        uint256 expectedValue = 2400000000000000000;
+        uint256 deposit = 2400000000000000000;
         vm.expectEmit(false, true, false, true, address(shibuyaErc20));
         emit BasicERC20.OutboundTransfer(bytes32(0), ALICE, BOB, 100);
-        bytes32 messageID = shibuyaErc20.teleport{value: expectedValue}(BOB, 100);
+        bytes32 messageID = shibuyaErc20.teleport{value: deposit}(BOB, 100);
 
         // Now with the `messageID`, Alice can check the message status in the destination gateway contract
         // status 0: means the message is pending
