@@ -60,29 +60,19 @@ contract GmpTestToolsTest is Test {
         assertEq(address(shibuyaErc20), vm.computeCreateAddress(ALICE, 0), "unexpected shibuyaErc20 address");
         assertEq(address(sepoliaErc20), vm.computeCreateAddress(BOB, 0), "unexpected sepoliaErc20 address");
 
-        ///////////////////////////////////////////////////////////
-        // Step 3: Deposit funds to destination Gateway Contract //
-        ///////////////////////////////////////////////////////////
-
-        // Switch to Sepolia network and Alice account
-        GmpTestTools.switchNetwork(SEPOLIA_NETWORK, ALICE);
-        // If the sender is a contract, it's address must be converted
-        GmpSender sender = address(shibuyaErc20).toSender(true);
-        // Alice deposit 1 ether to Sepolia gateway contract
-        SEPOLIA_GATEWAY.deposit{value: 1 ether}(sender, SHIBUYA_NETWORK);
-
         //////////////////////////////
-        // Step 4: Send GMP message //
+        // Step 3: Send GMP message //
         //////////////////////////////
 
         // Switch to Shibuya network and Alice account
         GmpTestTools.switchNetwork(SHIBUYA_NETWORK, ALICE);
 
-        // Teleport 100 tokens from Alice to to Bob's account in sepolia
-        // Obs: The `teleport` method internally calls `gateway.submitMessage(...)`
+        // Teleport 100 tokens from Alice to Bob's account in Sepolia
+        // Obs: The `teleport` method now calls `gateway.submitMessage(...)` with value
+        uint256 expectedValue = 2400000000000000000;
         vm.expectEmit(false, true, false, true, address(shibuyaErc20));
         emit BasicERC20.OutboundTransfer(bytes32(0), ALICE, BOB, 100);
-        bytes32 messageID = shibuyaErc20.teleport(BOB, 100);
+        bytes32 messageID = shibuyaErc20.teleport{value: expectedValue}(BOB, 100);
 
         // Now with the `messageID`, Alice can check the message status in the destination gateway contract
         // status 0: means the message is pending
@@ -95,7 +85,7 @@ contract GmpTestToolsTest is Test {
         );
 
         ///////////////////////////////////////////////////
-        // Step 5: Wait Chronicles Relay the GMP message //
+        // Step 4: Wait Chronicles Relay the GMP message //
         ///////////////////////////////////////////////////
 
         // The GMP hasn't been executed yet...
