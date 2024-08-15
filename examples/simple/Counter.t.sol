@@ -57,17 +57,10 @@ contract CounterTest is Test {
         GmpTestTools.switchNetwork(sepoliaId);
         assertEq(counter.number(), 0);
 
-        // Convert Alice address to GmpSender, passing `false` indicates
-        // that the sender is an EOA, not a contract
-        GmpSender sender = alice.toSender(false);
-
-        // Deposit funds to pay for the execution cost from Shibuya to Sepolia
-        sepoliaGateway.deposit{value: 1 ether}(sender, shibuyaId);
-        assertEq(counter.number(), 0);
-
         // Submit a new GMP from Shibuya to Sepolia
         GmpTestTools.switchNetwork(shibuyaId);
-        shibuyaGateway.submitMessage(address(counter), sepoliaId, 100_000, "");
+        uint256 deposit = shibuyaGateway.estimateMessageCost(sepoliaId, 0, 100_000);
+        shibuyaGateway.submitMessage{value: deposit}(address(counter), sepoliaId, 100_000, "");
 
         // Check the counter before relaying the GMP message
         GmpTestTools.switchNetwork(sepoliaId);

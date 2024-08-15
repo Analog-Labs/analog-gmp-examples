@@ -64,11 +64,16 @@ contract BasicERC20 is ERC20, IGmpReceiver {
     /**
      * @dev Teleport tokens from `msg.sender` to `recipient` in `_recipientNetwork`
      */
-    function teleport(address recipient, uint256 amount) external returns (bytes32 messageID) {
+    function teleport(address recipient, uint256 amount) external payable returns (bytes32 messageID) {
         _burn(msg.sender, amount);
         bytes memory message = abi.encode(TeleportCommand({from: msg.sender, to: recipient, amount: amount}));
-        messageID = _trustedGateway.submitMessage(address(_recipientErc20), _recipientNetwork, MSG_GAS_LIMIT, message);
+        messageID = _trustedGateway.submitMessage{value: msg.value}(address(_recipientErc20), _recipientNetwork, MSG_GAS_LIMIT, message);
         emit OutboundTransfer(messageID, msg.sender, recipient, amount);
+    }
+
+    function teleportCost(uint16 networkid, address recipient, uint256 amount) public view returns (uint256 deposit) {
+        bytes memory message = abi.encode(TeleportCommand({from: msg.sender, to: recipient, amount: amount}));
+        return _trustedGateway.estimateMessageCost(networkid, message.length, MSG_GAS_LIMIT);
     }
 
     function onGmpReceived(bytes32 id, uint128 network, bytes32 sender, bytes calldata data)
