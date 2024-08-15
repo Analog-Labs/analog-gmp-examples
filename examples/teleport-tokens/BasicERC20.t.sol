@@ -69,7 +69,7 @@ contract GmpTestToolsTest is Test {
 
         // Teleport 100 tokens from Alice to Bob's account in Sepolia
         // Obs: The `teleport` method calls `gateway.submitMessage(...)` with value
-        uint256 deposit = 2400000000000000000;
+        uint256 deposit = shibuyaErc20.teleportCost(SEPOLIA_NETWORK, BOB, 100);
         vm.expectEmit(false, true, false, true, address(shibuyaErc20));
         emit BasicERC20.OutboundTransfer(bytes32(0), ALICE, BOB, 100);
         bytes32 messageID = shibuyaErc20.teleport{value: deposit}(BOB, 100);

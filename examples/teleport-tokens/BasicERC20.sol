@@ -71,6 +71,11 @@ contract BasicERC20 is ERC20, IGmpReceiver {
         emit OutboundTransfer(messageID, msg.sender, recipient, amount);
     }
 
+    function teleportCost(uint16 networkid, address recipient, uint256 amount) public view returns (uint256 deposit) {
+        bytes memory message = abi.encode(TeleportCommand({from: msg.sender, to: recipient, amount: amount}));
+        return _trustedGateway.estimateMessageCost(networkid, message.length, MSG_GAS_LIMIT);
+    }
+
     function onGmpReceived(bytes32 id, uint128 network, bytes32 sender, bytes calldata data)
         external
         payable
