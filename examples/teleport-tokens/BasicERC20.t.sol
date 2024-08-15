@@ -68,7 +68,7 @@ contract GmpTestToolsTest is Test {
         GmpTestTools.switchNetwork(SHIBUYA_NETWORK, ALICE);
 
         // Teleport 100 tokens from Alice to Bob's account in Sepolia
-        // Obs: The `teleport` method now calls `gateway.submitMessage(...)` with value
+        // Obs: The `teleport` method calls `gateway.submitMessage(...)` with value
         uint256 deposit = 2400000000000000000;
         vm.expectEmit(false, true, false, true, address(shibuyaErc20));
         emit BasicERC20.OutboundTransfer(bytes32(0), ALICE, BOB, 100);
