@@ -25,6 +25,17 @@ cd hello_gmp
 forge install Analog-Labs/analog-gmp
 ```
 
+### Solidity file remappings
+1. To map the imports to the correct files, run the following command to create the `remmaping.txt` file in the project root directory:
+```sh
+forge remappings > remappings.txt
+```
+obs: is important to run the command above only after install all dependecies.
+
+2. (optional) if you are using vscode, follow the instructions here:
+- https://book.getfoundry.sh/config/vscode?highlight=remappin#2-dependencies
+
+### Import analog-gmp dependencies
 All setup! now just need to import gmp dependencies from `@analog-gmp`:
 ```solidity
 import {IGmpReceiver} from "@analog-gmp/interfaces/IGmpReceiver.sol";
