@@ -30,7 +30,7 @@ contract BasicERC20 is ERC20, IGmpReceiver {
      *
      * Note Is not necessary to emit the source network, because this is already emitted by the gateway in `GmpExecuted` event.
      */
-    event InboundTransfer(bytes32 indexed id, address indexed from, address indexed to, uint256 amount);
+    event InboundTransfer(bytes32 indexed id, bytes32 indexed from, address indexed to, uint256 amount);
 
     /**
      * @dev Gas limit used to execute `onGmpReceived` method.
@@ -41,7 +41,7 @@ contract BasicERC20 is ERC20, IGmpReceiver {
      * @dev Command that will be encoded in the `data` field on the `onGmpReceived` method.
      */
     struct TeleportCommand {
-        address from;
+        bytes32 from;
         address to;
         uint256 amount;
     }
@@ -68,13 +68,13 @@ contract BasicERC20 is ERC20, IGmpReceiver {
      */
     function teleport(address recipient, uint256 amount) external payable returns (bytes32 messageID) {
         _burn(msg.sender, amount);
-        bytes memory message = abi.encode(TeleportCommand({from: msg.sender, to: recipient, amount: amount}));
+        bytes memory message = abi.encode(TeleportCommand({from: bytes32(bytes20(msg.sender)), to: recipient, amount: amount}));
         messageID = _trustedGateway.submitMessage{value: msg.value}(address(_recipientErc20), _recipientNetwork, MSG_GAS_LIMIT, message);
         emit OutboundTransfer(messageID, msg.sender, recipient, amount);
     }
 
     function teleportCost(uint16 networkid, address recipient, uint256 amount) public view returns (uint256 deposit) {
-        bytes memory message = abi.encode(TeleportCommand({from: msg.sender, to: recipient, amount: amount}));
+        bytes memory message = abi.encode(TeleportCommand({from: bytes32(bytes20(msg.sender)), to: recipient, amount: amount}));
         return _trustedGateway.estimateMessageCost(networkid, message.length, MSG_GAS_LIMIT);
     }
 
