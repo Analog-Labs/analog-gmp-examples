@@ -7,6 +7,8 @@ import {IGmpReceiver} from "@analog-gmp/interfaces/IGmpReceiver.sol";
 import {IGateway} from "@analog-gmp/interfaces/IGateway.sol";
 import {GmpSender, PrimitiveUtils} from "@analog-gmp/Primitives.sol";
 
+import {console} from "forge-std/Test.sol";
+
 contract BasicERC20 is ERC20, IGmpReceiver {
     using PrimitiveUtils for GmpSender;
 
@@ -76,21 +78,27 @@ contract BasicERC20 is ERC20, IGmpReceiver {
         return _trustedGateway.estimateMessageCost(networkid, message.length, MSG_GAS_LIMIT);
     }
 
-    function onGmpReceived(bytes32 id, uint128 network, bytes32 sender, bytes calldata data)
+    function onGmpReceived(bytes32 id, uint128 network, bytes32 _sender, bytes calldata data)
         external
         payable
         returns (bytes32)
     {
         // Convert bytes32 to address
-        address senderAddr = GmpSender.wrap(sender).toAddress();
+//        address _senderAddr = GmpSender.wrap(_sender).toAddress();
 
+        console.log("HMM");
         // Validate the message
         require(msg.sender == address(_trustedGateway), "Unauthorized: only the gateway can call this method");
         require(network == _recipientNetwork, "Unauthorized network");
-        require(senderAddr == address(_recipientErc20), "Unauthorized sender");
+//        require(senderAddr == address(_recipientErc20), "Unauthorized sender");
+
+        console.log("HELLO");
 
         // Decode the command
         TeleportCommand memory command = abi.decode(data, (TeleportCommand));
+//        (,,command) = abi.decode(data, (uint256,uint256,TeleportCommand));
+
+        console.log("THERE");
 
         // Mint the tokens to the destination account
         _mint(command.to, command.amount);

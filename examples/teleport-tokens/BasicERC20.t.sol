@@ -22,6 +22,28 @@ contract GmpTestToolsTest is Test {
     Gateway private constant SHIBUYA_GATEWAY = Gateway(GmpTestTools.SHIBUYA_GATEWAY);
     uint16 private constant SHIBUYA_NETWORK = GmpTestTools.SHIBUYA_NETWORK_ID;
 
+    // DBG
+    string constant RPC_URL = "http://127.0.0.1:8545";
+    address constant GW = 0x49877F1e26d523e716d941a424af46B86EcaF09E;
+
+    string constant CALLDATA = "0x00000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000060e659a7a1628cdd93febc04a4e0646ea20e9f5f0ce097d9a05290d4a9e054df4e000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000000000000000000000000000000001d1a94a2000";
+//    string constant CALLDATA = "0xe659a7a1628cdd93febc04a4e0646ea20e9f5f0ce097d9a05290d4a9e054df4e000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb92266000000000000000000000000000000000000000000000000000001d1a94a2000";
+    bytes32 constant msgId = 0x7006d4a23a194de7611ffbd974e88fbccc65d223f2742480c365e66dea839668;
+    uint128 constant networkId = 1000;
+    bytes32 constant SENDER = 0xe659a7a1628cdd93febc04a4e0646ea20e9f5f0ce097d9a05290d4a9e054df4e;
+
+    function test_dbg() external {
+        // uint256 forkId = vm.createFork(RPC_URL);
+        // vm.selectFork(forkId);
+//        BasicERC20 token = BasicERC20(GW);
+
+       BasicERC20 token = new BasicERC20("Token", "Anlog", IGateway(GW), BasicERC20(address(0)), 1000, address(0), 0);
+
+       vm.prank(GW);
+       token.onGmpReceived(msgId, networkId, SENDER, vm.parseBytes(CALLDATA));
+
+    }
+
     /// @dev Test the teleport of tokens from Alice's account in Shibuya to Bob's account in Sepolia
     function test_teleportTokens() external {
         ////////////////////////////////////
