@@ -9,7 +9,7 @@ Install instructions: https://book.getfoundry.sh/
 
 ## Examples
 
-- [Simple Counter](./examples/teleport-tokens/README.md): Increment a counter in a contract deployed at `Chain A` by sending a message from `Chain B`. 
+- [Simple Counter](https://github.com/Analog-Labs/analog-gmp-examples/tree/main/examples/simple): Increment a counter in a contract deployed at `Chain A` by sending a message from `Chain B`. 
 - [Teleport Tokens](./examples/teleport-tokens/README.md): Teleport ERC20 tokens from `Chain A` to `Chain B`. 
 
 ## Starting a New Project
